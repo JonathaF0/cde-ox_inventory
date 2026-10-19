@@ -1,0 +1,92 @@
+name: Track ox_inventory releases
+
+# Once a day, look at overextended/ox_inventory's latest release. If this
+# fork's main does not contain it yet, push that release as a branch named
+# upstream/<tag> and open a pull request into main, so an update is one
+# review: GitHub shows what changed, and a conflict with the cde bridge can
+# be resolved in the pull request.
+#
+# Only a branch is pushed, never a tag: release.yml runs on v*.*.* tags and
+# needs Overextended's own app secrets.
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get this fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find the latest ox_inventory release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh api repos/overextended/ox_inventory/releases/latest --jq .tag_name)
+          if [ -z "$tag" ]; then
+            echo "No release found on overextended/ox_inventory." >&2
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Latest release: $tag"
+
+      - name: Compare with main
+        id: check
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          git remote add upstream https://github.com/overextended/ox_inventory.git
+          git fetch --no-tags upstream "refs/tags/$TAG:refs/upstream-tags/$TAG"
+          if git merge-base --is-ancestor "refs/upstream-tags/$TAG" origin/main; then
+            echo "main already contains $TAG."
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "main does not contain $TAG yet."
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Push the release as a branch and open a pull request
+        if: steps.check.outputs.needed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          branch="upstream/$TAG"
+          existing=$(gh pr list --head "$branch" --state all --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            echo "Pull request #$existing already covers $TAG."
+            exit 0
+          fi
+          # A tag can be annotated; a branch has to point at the commit.
+          commit=$(git rev-parse "refs/upstream-tags/$TAG^{commit}")
+          git push origin "$commit:refs/heads/$branch"
+          if git merge-tree --write-tree origin/main "$commit" > /dev/null; then
+            merge="It merges cleanly into main."
+          else
+            merge="It conflicts with main, most likely in a file the cde bridge also changes (modules/mysql/server.lua, locales/en.json). Resolve it in this pull request, keeping the \`cde\` case and the \`cde_licence_from_cad\` string."
+          fi
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "ox_inventory $TAG" \
+            --body "Overextended released [ox_inventory $TAG](https://github.com/overextended/ox_inventory/releases/tag/$TAG). This brings it into the fork.
+
+          $merge
+
+          Before merging: read the release notes for changes to \`modules/bridge\`, \`server.setPlayerInventory\`, \`server.syncInventory\` or the mysql module, which the cde bridge relies on, and run it on a test server with cde-core.
+
+          The release zip on Overextended's page includes the built web UI; this branch is source, so build \`web/\` (or copy \`web/build\` from that zip) before deploying."
