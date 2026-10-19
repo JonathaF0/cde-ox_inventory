@@ -29,3 +29,13 @@ ensure ox_inventory
 cde-core must start before ox_inventory. `inventory:police` is ignored once
 cde-core has published the CAD's law departments; until then, and on a server
 without CDECAD, the convar applies as usual.
+
+## Keeping up with ox_inventory
+
+`.github/workflows/upstream-sync.yml` checks Overextended's latest release once
+a day. When this fork's `main` does not have it yet, it pushes the release as a
+branch, `upstream/<tag>`, and opens a pull request into `main` that says
+whether it merges cleanly. A conflict will almost always be in
+`modules/mysql/server.lua` or `locales/en.json`, the two upstream files the
+bridge changes: keep the `cde` case and the `cde_licence_from_cad` string.
+It can also be run by hand from the Actions tab.
