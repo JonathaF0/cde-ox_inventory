@@ -32,6 +32,7 @@ We do not guarantee compatibility or support for third-party resources.
 - [esx](https://github.com/esx-framework/esx_core)
 - [qbox](https://github.com/Qbox-project/qbx_core)
 - [nd_core](https://github.com/ND-Framework/ND_Core)
+- cde-core, the CDE Framework from CDECAD (this fork only; see [CDE-CHANGES.md](./CDE-CHANGES.md))
 
 ## ✨ Features
 
