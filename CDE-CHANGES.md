@@ -10,7 +10,7 @@ The changes, so they can be offered upstream as they are:
 
 | File | Change |
 |---|---|
-| `modules/bridge/cde/server.lua` | New. Loads a character's inventory on cde-core's `playerLoaded`, saves it on `playerUnloaded`, keeps cash and the `money` item in step, takes groups from cde-core (the character's job, plus the department while on duty), answers licence checks from cde-core's copy of the CAD's licences, refuses to sell licences (the CAD issues them), and fills `shared.police` from the CAD's law departments |
+| `modules/bridge/cde/server.lua` | New. Loads a character's inventory on cde-core's `playerLoaded`, saves it on `playerUnloaded`, keeps cash and the `money` item in step, takes groups from cde-core (the character's job, plus the department while on duty), answers licence checks from cde-core's copy of the CAD's licences, refuses to sell licences (the CAD issues them), fills `shared.police` from the CAD's law departments, and hands the use of an item with no `consume` to cde-core's usable items (`server.UseItem`), as the ESX bridge does with `ESX.UseItem`. Needs cde-core 0.4.0 |
 | `modules/bridge/cde/client.lua` | New. The client side of the same: groups, logout, and the police groups |
 | `modules/mysql/server.lua` | A `cde` case: player inventories in `cde_characters.inventory` keyed by `citizenid`, trunks and gloveboxes in `cde_vehicles` keyed by `plate` |
 | `locales/en.json` | `cde_licence_from_cad`, shown when a shop is asked to sell a licence |
