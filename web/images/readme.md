@@ -48,7 +48,16 @@ For more images, see [this thread](https://forum.cfx.re/t/inventory-icons-pack-f
 
 The items cde-core adds; the same files ship in cde-core's `images/`, and their SVG sources are kept with CDECAD's assets.
 
+- beer
+- breathalyzer
 - citation_ticket
+- drug_swab
+- ecstasy
 - gov_id
+- joint
 - licence_card
+- oxy
 - vehicle_registration
+- vodka
+- whiskey
+- wine
