@@ -67,7 +67,7 @@ jobs:
           if git merge-tree --write-tree origin/main "$commit" > /dev/null; then
             merge="It merges cleanly into main."
           else
-            merge="It conflicts with main, most likely in a file the cde bridge also changes (modules/mysql/server.lua, locales/en.json). Resolve it in this pull request, keeping the \`cde\` case and the \`cde_licence_from_cad\` string."
+            merge="It conflicts with main, most likely in locales/en.json, the one upstream file this fork changes. Resolve it in this pull request, keeping the \`cde_licence_from_cad\` string."
           fi
           gh pr create \
             --base main \
