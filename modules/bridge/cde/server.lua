@@ -1,4 +1,4 @@
-if not lib.checkDependency('cde-core', '0.1.0', true) then return end
+if not lib.checkDependency('cde-core', '0.4.0', true) then return end
 
 local Inventory = require 'modules.inventory.server'
 local Core = exports['cde-core']
@@ -36,6 +36,14 @@ SetTimeout(500, function()
         setCharacterInventory(player)
     end
 end)
+
+-- An item with no `consume` in data/items.lua is the framework's to use:
+-- cde-core runs whichever resource registered it (RegisterUsableItem, or
+-- QBCore's CreateUseableItem and ESX's RegisterUsableItem through the
+-- compatibility resources).
+server.UseItem = function(source, name, data)
+    return Core:UseItem(source, name, data)
+end
 
 -- Accounts that need to be synced with physical items
 server.accounts = {
