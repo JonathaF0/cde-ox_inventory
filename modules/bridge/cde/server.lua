@@ -1,12 +1,17 @@
-if not lib.checkDependency('cde-core', '0.1.0', true) then return end
+if not lib.checkDependency('cde-core', '0.4.0', true) then return end
 
 local Inventory = require 'modules.inventory.server'
+local db = require 'modules.mysql.server'
+
+db.setup({
+    user = { table = 'cde_characters', col = 'citizenid' },
+    vehicle = { table = 'cde_vehicles', col = 'plate' },
+})
+
 local Core = exports['cde-core']
 
 AddEventHandler('cde-core:server:playerUnloaded', server.playerDropped)
 
--- cde-core's cash column is the record on load; the money item is set from it
--- after the inventory (and the money item it saved) is loaded.
 local function setCharacterInventory(player)
     server.setPlayerInventory({
         source = player.source,
@@ -19,9 +24,6 @@ local function setCharacterInventory(player)
     Inventory.SetItem(player.source, 'money', player.cash)
 end
 
--- Law departments come from the CAD's duty departments, not a fixed list.
--- shared.police is refilled in place: the stock shops and stashes hold a
--- reference to this same table.
 local function setPoliceGroups(list)
     if type(list) ~= 'table' or #list == 0 then return end
     for name in pairs(shared.police) do shared.police[name] = nil end
@@ -37,7 +39,10 @@ SetTimeout(500, function()
     end
 end)
 
--- Accounts that need to be synced with physical items
+server.UseItem = function(source, name, data)
+    return Core:UseItem(source, name, data)
+end
+
 server.accounts = {
     money = 0
 }
@@ -78,7 +83,6 @@ function server.setPlayerData(player)
     }
 end
 
--- Licence status is the CAD's (court and DMV), cached by cde-core.
 ---@diagnostic disable-next-line: duplicate-set-field
 function server.hasLicense(inv, license)
     if Core:HasLicence(inv.id, license) then
@@ -86,7 +90,6 @@ function server.hasLicense(inv, license)
     end
 end
 
--- Licences are issued in the CAD, so a shop cannot sell one.
 ---@diagnostic disable-next-line: duplicate-set-field
 function server.buyLicense(inv, license)
     if server.hasLicense(inv, license.name) then

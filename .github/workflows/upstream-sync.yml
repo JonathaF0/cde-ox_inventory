@@ -1,14 +1,5 @@
 name: Track ox_inventory releases
 
-# Once a day, look at overextended/ox_inventory's latest release. If this
-# fork's main does not contain it yet, push that release as a branch named
-# upstream/<tag> and open a pull request into main, so an update is one
-# review: GitHub shows what changed, and a conflict with the cde bridge can
-# be resolved in the pull request.
-#
-# Only a branch is pushed, never a tag: release.yml runs on v*.*.* tags and
-# needs Overextended's own app secrets.
-
 on:
   schedule:
     - cron: "17 6 * * *"
@@ -71,13 +62,12 @@ jobs:
             echo "Pull request #$existing already covers $TAG."
             exit 0
           fi
-          # A tag can be annotated; a branch has to point at the commit.
           commit=$(git rev-parse "refs/upstream-tags/$TAG^{commit}")
           git push origin "$commit:refs/heads/$branch"
           if git merge-tree --write-tree origin/main "$commit" > /dev/null; then
             merge="It merges cleanly into main."
           else
-            merge="It conflicts with main, most likely in a file the cde bridge also changes (modules/mysql/server.lua, locales/en.json). Resolve it in this pull request, keeping the \`cde\` case and the \`cde_licence_from_cad\` string."
+            merge="It conflicts with main, most likely in locales/en.json, the one upstream file this fork changes. Resolve it in this pull request, keeping the \`cde_licence_from_cad\` string."
           fi
           gh pr create \
             --base main \
