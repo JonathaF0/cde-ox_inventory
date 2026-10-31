@@ -43,3 +43,21 @@
 - ziptie
 
 For more images, see [this thread](https://forum.cfx.re/t/inventory-icons-pack-for-rp-server-hq-draw-24k-cloth-l-1400-objects/5203350) and get a **10%** discount when using creator code `ox10`.
+
+## Drawn for the CDE Framework
+
+The items cde-core adds; the same files ship in cde-core's `images/`, and their SVG sources are kept with CDECAD's assets.
+
+- beer
+- breathalyzer
+- citation_ticket
+- drug_swab
+- ecstasy
+- gov_id
+- joint
+- licence_card
+- oxy
+- vehicle_registration
+- vodka
+- whiskey
+- wine
