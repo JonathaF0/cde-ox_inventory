@@ -9,5 +9,7 @@ licensed under the GPL-3.0 or later. See NOTICE.md and LICENSE.
 | `modules/bridge/cde/client.lua` | Added: bridge for cde-core, client |
 | `locales/en.json` | Added `cde_licence_from_cad` |
 | `client.lua` | Key bindings renamed `cde_inv`, `cde_inv2`, `cde_hotbar`, so `inventory:keys` applies to players who had bound the old ones |
+| `data/cde.lua` | Added: cde-core's items (ID card, fuel card, papers, drinks, drugs, test kits) |
+| `modules/items/shared.lua` | Loads `data/cde.lua` after `data/items.lua` when `inventory:framework` is `cde`, skipping any item `data/items.lua` already defines |
 | `web/images/` | Added: `beer`, `breathalyzer`, `citation_ticket`, `drug_swab`, `ecstasy`, `gov_id`, `joint`, `licence_card`, `oxy`, `vehicle_registration`, `vodka`, `whiskey`, `wine`, `fuel_card` |
 | `.github/workflows/upstream-sync.yml` | Added: opens a pull request for each new ox_inventory release |
